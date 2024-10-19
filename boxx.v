@@ -2,23 +2,20 @@ module boxx
 
 import thecodrr.crayon
 
-const (
-	nl = '\n'
-	//sep = seperator; sp = spacing; ln = line; os = odd_space; s = space
-	center_align = '{sep}{sp}{ln}{os}{sp}{sep}'
-	left_align = '{sep}{px}{ln}{os}{sp}{s}{sep}'
-	right_align = '{sep}{sp}{os}{s}{ln}{px}{sep}'
-)
+const nl = '\n'
+// sep = seperator; sp = spacing; ln = line; os = odd_space; s = space
+const center_align = '{sep}{sp}{ln}{os}{sp}{sep}'
+const left_align = '{sep}{px}{ln}{os}{sp}{s}{sep}'
+const right_align = '{sep}{sp}{os}{s}{ln}{px}{sep}'
 
 pub struct Boxx {
-	top_right string
-	top_left string
-	vertical string
-	horizontal string
+	top_right    string
+	top_left     string
+	vertical     string
+	horizontal   string
 	bottom_right string
-	bottom_left string
-
-	mut:
+	bottom_left  string
+mut:
 	config Config
 }
 
@@ -35,12 +32,12 @@ pub enum TitlePosition {
 }
 
 pub struct Config {
-	pub mut:
-	py int
-	px int
-	content_align Align
-	color string //name or rbg
-	typ string
+pub mut:
+	py             int
+	px             int
+	content_align  Align
+	color          string // name or rbg
+	typ            string
 	title_position TitlePosition
 }
 
@@ -53,11 +50,11 @@ pub fn new(config Config) Boxx {
 }
 
 // Print the box with the given text & title (optional)
-pub fn (b &Boxx) print(text, title string) {
+pub fn (b &Boxx) print(text string, title string) {
 	mut lines := []string{}
 	if title != '' {
 		if b.config.title_position != .inside && title.contains('\n') {
-			panic("Multiline titles are only supported when title_position == .inside.")
+			panic('Multiline titles are only supported when title_position == .inside.')
 		}
 		if b.config.title_position == .inside {
 			lines << title.split(nl)
@@ -68,7 +65,7 @@ pub fn (b &Boxx) print(text, title string) {
 	println(b.to_str(title, lines))
 }
 
-/* PRIVATE METHODS */
+// /* PRIVATE METHODS */
 
 fn (b &Boxx) to_str(title string, lines []string) string {
 	titles_lines_len := title.split(nl).len
@@ -84,10 +81,10 @@ fn (b &Boxx) to_str(title string, lines []string) string {
 	n := longest_line + (padding_count * 2) + 2
 
 	if b.config.title_position != .inside && title.len > n - 2 {
-		panic("Title must be lower in length than the top & bottom bars.")
+		panic('Title must be lower in length than the top & bottom bars.')
 	}
 
-	// create top and bottom bars 
+	// create top and bottom bars
 	bar := repeat(b.horizontal, n - 2)
 	mut top_bar := '${b.top_left}${bar}${b.top_right}'
 	mut bottom_bar := '${b.bottom_left}${bar}${b.bottom_right}'
@@ -103,8 +100,8 @@ fn (b &Boxx) to_str(title string, lines []string) string {
 
 	// apply styles if available
 	if b.config.color != '' {
-		top_bar = crayon.color('{${b.config.color} $top_bar}')
-		bottom_bar = crayon.color('{${b.config.color} $bottom_bar}')
+		top_bar = crayon.color('{${b.config.color} ${top_bar}}')
+		bottom_bar = crayon.color('{${b.config.color} ${bottom_bar}}')
 	}
 
 	if b.config.title_position == .inside && top_bar.len != bottom_bar.len {
@@ -140,36 +137,51 @@ fn (b &Boxx) to_str(title string, lines []string) string {
 			}
 		}
 		spacing := space + px
-		mut format := if b.config.content_align == .center {center_align} else if b.config.content_align == .right {right_align} else {left_align}
+		mut format := if b.config.content_align == .center {
+			center_align
+		} else if b.config.content_align == .right {
+			right_align
+		} else {
+			left_align
+		}
 
 		// if it's title center align it
-		if i < titles_lines_len && title != '' {format = center_align}
+		if i < titles_lines_len && title != '' {
+			format = center_align
+		}
 
 		// check & apply styles
-		sep := if b.config.color != '' {crayon.color('{${b.config.color} ${b.vertical}}')} else {b.vertical}
+		sep := if b.config.color != '' {
+			crayon.color('{${b.config.color} ${b.vertical}}')
+		} else {
+			b.vertical
+		}
 
 		texts << format.replace('{sep}', sep)
-		.replace('{sp}', spacing)
-		.replace('{ln}', line)
-		.replace('{os}', odd_space)
-		.replace('{s}', space)
-		.replace('{px}', px)
+			.replace('{sp}', spacing)
+			.replace('{ln}', line)
+			.replace('{os}', odd_space)
+			.replace('{s}', space)
+			.replace('{px}', px)
 	}
 	texts << b.add_vert_padding(n)
 
-	return '$top_bar$nl' + texts.join(nl) + '$nl$bottom_bar$nl'
+	return '${top_bar}${nl}' + texts.join(nl) + '${nl}${bottom_bar}${nl}'
 }
 
-fn (b &Boxx) add_vert_padding(length int)[]string {
+fn (b &Boxx) add_vert_padding(length int) []string {
 	padding := repeat(' ', length - 2)
 
-	//check and apply styles
-	sep := if b.config.color != '' {crayon.color('{${b.config.color} ${b.vertical}}')} else {b.vertical}
+	// check and apply styles
+	sep := if b.config.color != '' {
+		crayon.color('{${b.config.color} ${b.vertical}}')
+	} else {
+		b.vertical
+	}
 
 	mut texts := []string{}
-	for _ in 0..b.config.py {
-		texts << sep + padding + sep	
+	for _ in 0 .. b.config.py {
+		texts << sep + padding + sep
 	}
 	return texts
 }
-

@@ -4,22 +4,22 @@ import thecodrr.crayon
 import strings
 
 fn repeat(c string, n int) string {
-	if n <= 0{
+	if n <= 0 {
 		return ''
 	}
 	mut builder := strings.new_builder(n)
-	for i := 0; i < n; i++{
+	for i := 0; i < n; i++ {
 		builder.write_string(c)
 	}
 	str := builder.str()
-	//builder.free()
+	// builder.free()
 	return str
 }
 
 fn repeat_with_string(c string, n int, str string) string {
 	count := n - str.len - 2
 	bar := repeat(c, count)
-	str1 := ' $str $bar'
+	str1 := ' ${str} ${bar}'
 	return str1
 }
 
